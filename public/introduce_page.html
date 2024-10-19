@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduce page</title>
+    <script type="module" src="JAVASCRIPT/main.js" defer></script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+    <script type="text/javascript"></script>
+    <script
+      type="module"
+      src="JAVASCRIPT/introduce_discuss_judge.js"
+      defer
+    ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="CSS/style.css" />
+  </head>
+  <body style="height: 100vh">
+    <div id="google_translate_element"></div>
+    <div class="introduce-page-container">
+      <div class="nav-bar">
+        <img
+          src="https://media.canva.com/v2/image-resize/format:PNG/height:200/quality:100/uri:s3%3A%2F%2Fmedia-private.canva.com%2F9XOmw%2FMAGTrt9XOmw%2F1%2Fp.png/watermark:F/width:198?csig=AAAAAAAAAAAAAAAAAAAAAE3fMm0_qVXbZXu9xWZToFFigZAa1XmCSFx4k9IoH1ZV&exp=1729363548&osig=AAAAAAAAAAAAAAAAAAAAADWprKia1dyhhMHwbuAREPL_4AH0nV6yHF75s98kvxI8&signer=media-rpc&x-canva-quality=thumbnail"
+          alt=""
+          class="logo"
+        />
+        <div class="menu">
+          <a href="index.html">Trang chủ</a>
+          <a href="introduce_page.html">Các làng nghề truyền thống</a>
+        </div>
+        <button id="choose-langue">Change langue</button>
+      </div>
+
+      <div class="m-nav-bar">
+        <div id="hamburger">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div id="m-menu">
+          <div id="m-menu-close">&#10006;</div>
+          <div class="m-menu-items">
+            <a href="index.html">Trang chủ</a>
+            <a href="introduce_page.html">Các làng nghề truyền thống</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <select name="choose-data" id="choose-data">
+          <option value="none">Chọn làng nghề bạn muốn tìm hiểu</option>
+          <option value="Đúc chuông đồng Long Điền">
+            Làng đúc chuông đồng Long Điền
+          </option>
+          <option value="Bánh tráng An Ngãi">Làng Bánh tráng An Ngãi</option>
+          <option value="Làng chài Phước Hải">Làng chài Long Hải</option>
+          <option value="Làng mỹ nghệ">Làng mỹ nghệ</option>
+          <option value="Làng bún Long Kiên">Làng bún Long Kiên</option>
+        </select>
+
+        <div class="content-main">
+          <div class="content-menu">
+            <p>Mục lục</p>
+            <div class="content-menu-links"></div>
+          </div>
+          <div style="display: none" id="feature-image">
+            <img src="" alt="" id="poster" />
+            <div id="image-container">
+              <video
+                autoplay
+                muted
+                loop
+                style="width: 100%; filter: blur(1px); display: none"
+                id="myVideo"
+              >
+                <source
+                  src="IMAGE/trai nghiem 4102024/20241004_095155(1).mp4"
+                  type="video/mp4"
+                />
+              </video>
+              <div class="overlay" id="overlay">
+                <img src="" alt="" id="overlay_video" />
+              </div>
+            </div>
+          </div>
+          <div id="display-data"></div>
+        </div>
+
+        <div style="display: none" id="comment_area">
+          <h2>Để lại đánh giá về trải nghiệm của bạn</h2>
+          <br />
+          <div
+            style="
+              background-color: rgba(83, 80, 80, 0.192);
+              height: auto;
+              width: 51%;
+            "
+            id="comment"
+          ></div>
+          <br />
+          <div style="display: flex">
+            <textarea
+              name=""
+              id="input_comment"
+              placeholder="Đánh giá của bạn"
+              style="width: 51%"
+            ></textarea>
+            <img
+              src="IMAGE/ICON/icons8-up-arrow-50.png"
+              alt=""
+              id="submit_comment"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

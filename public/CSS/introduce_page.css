@@ -1,0 +1,57 @@
+@import url(defaut.css);
+#home-page_header{
+    align-items: center;
+}
+
+#home-page_header li{
+    list-style-type: none;
+    font-size: 120%;
+    margin-left: 2%;
+    height:  90%;
+    display:  flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 400;
+}
+#home-page_header li:hover{
+    cursor: default;
+}
+#home-page_header button{
+    border: none;
+    height: 50%;
+}
+#home-page_header button:hover{
+    border: solid 2px rgb(102, 101, 101);
+}
+.hide_and_show_cont{
+    color: rgb(43, 42, 42);
+    display: none;
+    line-height: 250%;
+}
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+.overlay img {
+    max-width: 80%;
+    max-height: 80%;
+    transform: scale(0);
+    transition: transform 0.3s;
+}
+.overlay.active img {
+    transform: scale(1);
+}
