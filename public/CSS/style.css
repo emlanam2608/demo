@@ -37,7 +37,7 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  background-image: url(/public/IMAGE/home_bg.jpg);
+  background-image: url(/IMAGE/home_bg.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   padding-top: 1rem;
