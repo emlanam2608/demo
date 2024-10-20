@@ -142,7 +142,8 @@
 .introduce-page-container .content-main .info_header {
   font-size: 2.3rem;
   font-weight: 700;
-  padding: 2rem 0;
+  padding-top: 2rem;
+  padding-bottom: 1rem;
 }
 
 .introduce-page-container .content-main .details-section {
@@ -153,12 +154,15 @@
   font-size: 1.5rem;
   font-weight: 400;
   word-spacing: 0.2rem;
+  text-indent: 3.5rem;
+  text-align: justify;
 }
 
 .introduce-page-container .content-main .details-section h3 {
   font-size: 1.6rem;
   font-weight: 700;
-  padding: 0.5rem 0;
+  padding-bottom: 0.5rem;
+  text-indent: 2rem;
 }
 
 .introduce-page-container .content-main .image-section {
