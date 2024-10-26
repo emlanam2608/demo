@@ -36,13 +36,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const image = document.createElement("img");
     image.src = imageSrc;
-    image.classList.add("preview-image");
     previewBlock.appendChild(image);
+
+    const descDiv = document.createElement("div");
+    previewBlock.appendChild(descDiv);
 
     const description = document.createElement("p");
     description.textContent = desc;
-    description.classList.add("preview-description");
-    previewBlock.appendChild(description);
+    descDiv.appendChild(description);
+
+    const button = document.createElement("button");
+    button.textContent = "Tìm hiểu thêm";
+    descDiv.appendChild(button);
 
     return previewBlock;
   };
