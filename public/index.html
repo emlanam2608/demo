@@ -27,10 +27,13 @@
       </div>
       <div id="nav-bar" class="nav-bar">
         <img src="IMAGE/logo.webp" alt="" class="logo" />
-        <div class="menu">
-          <a href="index.html">Trang chủ</a>
-          <a href="introduce_page.html">Các làng nghề truyền thống</a>
-        </div>
+        <ul class="menu">
+          <li><a href="index.html">Trang chủ</a></li>
+          <li class="dropdown">
+            <a class="dropbtn">Làng nghề</a>
+            <div class="dropdown-content"></div>
+          </li>
+        </ul>
       </div>
 
       <div class="m-nav-bar">
@@ -41,10 +44,19 @@
         </div>
         <div id="m-menu">
           <div id="m-menu-close">&#10006;</div>
-          <div class="m-menu-items">
-            <a href="index.html">Trang chủ</a>
-            <a href="introduce_page.html">Các làng nghề truyền thống</a>
-          </div>
+          <ul class="m-menu-items">
+            <li><a href="index.html">Trang chủ</a></li>
+            <li class="dropdown">
+              <a class="dropbtn"
+                >Làng nghề
+                <p>⮝</p></a
+              >
+              <div class="dropdown-content">
+                <a href="lang-nghe.html">Làng nghề truyền thống</a>
+                <a href="lang-nghe.html">Làng nghề mới</a>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
 
