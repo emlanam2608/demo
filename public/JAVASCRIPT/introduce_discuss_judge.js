@@ -110,34 +110,34 @@ async function initialize() {
       folder_ref = ref(storage_ref, `${choose_data.value}`);
 
       let temporary_container = document.createElement("div");
-      await Object.entries(data[choose_data.value][0]).forEach(
-        ([key, value]) => {
-          if (key == "poster_link") {
-            poster_section.src = value;
-            return;
-          }
+      Object.entries(data[choose_data.value]).forEach(([key, value]) => {
+        if (key === "briefDesc") return;
 
-          if (key != "Lời kết") {
-            let div = generateInfoHeader(key, value);
-            temporary_container.appendChild(div);
-
-            generateContentMenu(key);
-          }
-
-          if (typeof value == "object") {
-            setTimeout(() => {
-              let contentElement = document.getElementById(
-                `${key.replace(/\s+/g, "")}-content`
-              );
-
-              Object.entries(value).forEach(([key1, value1]) => {
-                let div = generateInfoContent(key1, value1);
-                contentElement.appendChild(div);
-              });
-            }, 0);
-          }
+        if (key === "poster_link") {
+          poster_section.src = value;
+          return;
         }
-      );
+
+        if (key !== "Lời kết") {
+          let div = generateInfoHeader(key, value);
+          temporary_container.appendChild(div);
+
+          generateContentMenu(key);
+        }
+
+        if (typeof value == "object") {
+          setTimeout(() => {
+            let contentElement = document.getElementById(
+              `${key.replace(/\s+/g, "")}-content`
+            );
+
+            Object.entries(value).forEach(([key1, value1]) => {
+              let div = generateInfoContent(key1, value1);
+              contentElement.appendChild(div);
+            });
+          }, 0);
+        }
+      });
 
       display_data.innerHTML = temporary_container.innerHTML;
       showImage();
