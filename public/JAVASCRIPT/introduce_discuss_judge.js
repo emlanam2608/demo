@@ -171,17 +171,12 @@ function observeElement(element) {
 async function comment() {
   await observeElement(comment_area);
   submit_comment.addEventListener("click", function () {
-    //console.log(folder_ref)
     async function upload_comment() {
       const res = await listAll(folder_ref);
-      console.log(res.items.length);
       let input_comment = document.getElementById("input_comment");
       let file_ref = ref(folder_ref, `comment(${res.items.length})`);
       if (input_comment.value != "") {
-        //console.log(file_ref)
-
         await uploadString(file_ref, input_comment.value).then((snapshot) => {
-          console.log("Title uploaded successfully!");
           $("#comment").append("<p>" + input_comment.value + "</p>");
         });
       }
@@ -189,7 +184,6 @@ async function comment() {
 
     upload_comment();
   });
-  // console.log(1);
 }
 
 comment();
@@ -199,7 +193,6 @@ async function reload_comment_section() {
     await initialize();
     choose_data.addEventListener("change", async function () {
       const res = await listAll(folder_ref);
-      console.log(res.items);
 
       let temporary_container = document.createElement("div");
       async function load_comment() {
@@ -212,7 +205,6 @@ async function reload_comment_section() {
             const response = await data.blob();
             const content = await response.text();
 
-            console.log(content);
             temporary_element.innerHTML = `<p>${content}</p>`;
             temporary_container.appendChild(temporary_element);
           } catch (error) {
@@ -223,9 +215,7 @@ async function reload_comment_section() {
 
       await load_comment();
 
-      console.log(temporary_container);
       comment_section.innerHTML = temporary_container.innerHTML;
-      // console.log(folder_ref)
     });
   } catch (error) {
     console.error("Error listing items:", error);
