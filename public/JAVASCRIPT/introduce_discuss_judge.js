@@ -8,38 +8,20 @@ import {
   listAll,
   uploadString,
   getMetadata,
+  list,
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
-import { vietnameseToSlug } from "./utils.js";
-let choose_data = document.getElementById("choose-data");
-let display_data = document.getElementById("display-data");
-let poster_section = document.getElementById("poster");
-let contentMenu = document.querySelector(".content-menu");
+import { convertUTCTimeVietnamTime, vietnameseToSlug } from "./utils.js";
+let displayData = document.getElementById("display-data");
+let posterSection = document.getElementById("poster");
 let contentMenuLinks = document.querySelector(".content-menu-links");
-let state = undefined;
 let commentArea = document.getElementById("comment-area");
-let feature_image = document.getElementById("feature-image");
-let submit_comment = document.getElementById("submit_comment");
+let submitComment = document.getElementById("submit-comment");
+let commentsSection = document.getElementById("comments");
+
 //firebase setup
 const storage = getStorage(app);
 const storage_ref = ref(storage);
 let folder_ref;
-//choose-langue
-// cors
-const url = "https://cors-anywhere.herokuapp.com/https://example.com/api";
-fetch(url)
-  .then((response) => response.json())
-  .then((data) => console.log(data))
-  .catch((error) => console.error("Error:", error));
-
-//app.options('*', cors());
-// Function to handle the data and set up event listeners
-
-// setup check for eventListener
-async function waitForEvent(element, event) {
-  return new Promise((resolve) => {
-    element.addEventListener(event, resolve, { once: true });
-  });
-}
 
 function generateInfoHeader(key, value) {
   const h2Element = document.createElement("h2");
@@ -95,6 +77,21 @@ function generateContentMenu(key) {
   contentMenuLinks.appendChild(link);
 }
 
+function generateComment(comment, timeCreated) {
+  const div = document.createElement("div");
+  div.classList.add("comment");
+
+  const commentText = document.createElement("p");
+  commentText.textContent = comment;
+  div.appendChild(commentText);
+
+  const commentTime = document.createElement("p");
+  commentTime.textContent = convertUTCTimeVietnamTime(timeCreated);
+  div.appendChild(commentTime);
+
+  return div;
+}
+
 async function initialize() {
   try {
     // Fetch the data
@@ -103,26 +100,26 @@ async function initialize() {
 
     const q = new URLSearchParams(window.location.search).get("q");
 
-    let temporary_container = document.createElement("div");
+    let temporaryContainer = document.createElement("div");
     contentMenuLinks.innerHTML = "";
-    Object.entries(data).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(data)) {
       if (q === vietnameseToSlug(key)) {
         folder_ref = ref(storage_ref, `${key}`);
 
         const title = document.getElementById("title");
         title.textContent = key;
 
-        Object.entries(value).forEach(([key1, value1]) => {
-          if (key1 === "briefDesc") return;
+        for (const [key1, value1] of Object.entries(value)) {
+          if (key1 === "briefDesc") continue;
 
           if (key1 === "poster_link") {
-            poster_section.src = value1;
-            return;
+            posterSection.src = value1;
+            continue;
           }
 
           if (key1 !== "Lời kết") {
             let div = generateInfoHeader(key1, value1);
-            temporary_container.appendChild(div);
+            temporaryContainer.appendChild(div);
             generateContentMenu(key1);
           }
 
@@ -132,17 +129,17 @@ async function initialize() {
                 `${vietnameseToSlug(key1)}-content`
               );
 
-              Object.entries(value1).forEach(([key2, value2]) => {
+              for (const [key2, value2] of Object.entries(value1)) {
                 let div = generateInfoContent(key2, value2);
                 contentElement.appendChild(div);
-              });
+              }
             }, 0);
           }
-        });
+        }
       }
-    });
+    }
 
-    display_data.innerHTML = temporary_container.innerHTML;
+    displayData.innerHTML = temporaryContainer.innerHTML;
     showImage();
   } catch (error) {
     console.error("Error fetching JSON:", error);
@@ -152,78 +149,51 @@ async function initialize() {
 // Call the initialize function
 await initialize();
 
-//comment feature
-function observeElement(element) {
-  return new Promise((resolve) => {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (
-          mutation.attributeName === "style" &&
-          element.style.display === "block"
-        ) {
-          observer.disconnect();
-          resolve();
-        }
-      });
+submitComment.addEventListener("click", async function () {
+  console.log("submit comment");
+  const res = await listAll(folder_ref);
+  let inputComment = document.getElementById("input-comment");
+  let file_ref = ref(folder_ref, `comment(${res.items.length})`);
+  if (inputComment.value != "") {
+    await uploadString(file_ref, inputComment.value).then((snapshot) => {
+      const comment = generateComment(
+        inputComment.value,
+        snapshot.metadata.timeCreated
+      );
+      commentsSection.appendChild(comment);
     });
+  }
+});
 
-    observer.observe(element, { attributes: true });
-  });
-}
-
-async function comment() {
-  await observeElement(commentArea);
-  submit_comment.addEventListener("click", function () {
-    async function upload_comment() {
-      const res = await listAll(folder_ref);
-      let input_comment = document.getElementById("input_comment");
-      let file_ref = ref(folder_ref, `comment(${res.items.length})`);
-      if (input_comment.value != "") {
-        await uploadString(file_ref, input_comment.value).then((snapshot) => {
-          $("#comment").append("<p>" + input_comment.value + "</p>");
-        });
-      }
-    }
-
-    upload_comment();
-  });
-}
-
-comment();
-let comment_section = document.getElementById("comment");
 async function reload_comment_section() {
   try {
-    await initialize();
+    const res = await list(folder_ref, { maxResults: 100 });
 
-    const res = await listAll(folder_ref);
+    let temporaryContainer = document.createElement("div");
+    for (const data_package of res.items) {
+      try {
+        const url = await getDownloadURL(data_package);
+        const data = await fetch(url);
+        console.log(data.url.split("%2F").pop().split("?")[0]);
+        const response = await data.blob();
+        const content = await response.text();
 
-    let temporary_container = document.createElement("div");
-    async function load_comment() {
-      for (const data_package of res.items) {
-        let temporary_element = document.createElement("div");
+        const metadata = await getMetadata(data_package);
 
-        try {
-          const url = await getDownloadURL(data_package);
-          const data = await fetch(url);
-          const response = await data.blob();
-          const content = await response.text();
-
-          temporary_element.innerHTML = `<p>${content}</p>`;
-          temporary_container.appendChild(temporary_element);
-        } catch (error) {
-          console.error("Error loading comment:", error);
-        }
+        const comment = generateComment(content, metadata.timeCreated);
+        temporaryContainer.appendChild(comment);
+      } catch (error) {
+        console.error("Error loading comment:", error);
       }
     }
 
-    await load_comment();
-
-    comment_section.innerHTML = temporary_container.innerHTML;
+    commentsSection.innerHTML = temporaryContainer.innerHTML;
   } catch (error) {
     console.error("Error listing items:", error);
   }
 }
 reload_comment_section();
+
 let myVideo = document.getElementById("myVideo");
 let overlay_video = document.getElementById("overlay_video");
 const overlay = document.getElementById("overlay");
@@ -243,7 +213,7 @@ async function showImage() {
         overlay_video.src = img.src;
       });
     });
-  }, 10); // Delay 10ms
+  }, 10); // Delay 10ms to wait for the image to be loaded
 }
 
 // scroll to section when click on content menu with smooth behavior and offset top
@@ -269,6 +239,7 @@ contentMenuLinks.addEventListener("click", function (e) {
   });
 });
 
+// highlight the content menu link when scrolling
 window.addEventListener("scroll", function () {
   const headers = document.querySelectorAll(".info_header");
   const contentMenuLinks = document.querySelectorAll(".content-menu-links a");

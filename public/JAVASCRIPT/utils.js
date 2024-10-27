@@ -154,4 +154,25 @@ function vietnameseToSlug(str) {
   return str;
 }
 
-export { vietnameseToSlug };
+// convert utc time to vietnamese time with format: dd/mm/yyyy, hh:mm:ss
+function convertUTCTimeVietnamTime(utcTime) {
+  const utcDate = new Date(utcTime);
+  const options = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  };
+  const vietnamTime = utcDate
+    .toLocaleString("vi-VN", options)
+    .replace(/,/g, "");
+  const [time, date] = vietnamTime.split(" ");
+  const [day, month, year] = date.split("/");
+  const formattedTime = `${day}/${month}/${year}, ${time}`;
+
+  return formattedTime;
+}
+
+export { vietnameseToSlug, convertUTCTimeVietnamTime };
