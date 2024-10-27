@@ -103,12 +103,12 @@ async function initialize() {
 
     const q = new URLSearchParams(window.location.search).get("q");
 
-    // folder_ref = ref(storage_ref, `${choose_data.value}`);
-
     let temporary_container = document.createElement("div");
     contentMenuLinks.innerHTML = "";
     Object.entries(data).forEach(([key, value]) => {
       if (q === vietnameseToSlug(key)) {
+        folder_ref = ref(storage_ref, `${key}`);
+
         const title = document.getElementById("title");
         title.textContent = key;
 
@@ -194,32 +194,31 @@ let comment_section = document.getElementById("comment");
 async function reload_comment_section() {
   try {
     await initialize();
-    choose_data.addEventListener("change", async function () {
-      const res = await listAll(folder_ref);
 
-      let temporary_container = document.createElement("div");
-      async function load_comment() {
-        for (const data_package of res.items) {
-          let temporary_element = document.createElement("div");
+    const res = await listAll(folder_ref);
 
-          try {
-            const url = await getDownloadURL(data_package);
-            const data = await fetch(url);
-            const response = await data.blob();
-            const content = await response.text();
+    let temporary_container = document.createElement("div");
+    async function load_comment() {
+      for (const data_package of res.items) {
+        let temporary_element = document.createElement("div");
 
-            temporary_element.innerHTML = `<p>${content}</p>`;
-            temporary_container.appendChild(temporary_element);
-          } catch (error) {
-            console.error("Error loading comment:", error);
-          }
+        try {
+          const url = await getDownloadURL(data_package);
+          const data = await fetch(url);
+          const response = await data.blob();
+          const content = await response.text();
+
+          temporary_element.innerHTML = `<p>${content}</p>`;
+          temporary_container.appendChild(temporary_element);
+        } catch (error) {
+          console.error("Error loading comment:", error);
         }
       }
+    }
 
-      await load_comment();
+    await load_comment();
 
-      comment_section.innerHTML = temporary_container.innerHTML;
-    });
+    comment_section.innerHTML = temporary_container.innerHTML;
   } catch (error) {
     console.error("Error listing items:", error);
   }
