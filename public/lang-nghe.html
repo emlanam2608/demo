@@ -21,13 +21,15 @@
   <body style="height: 100vh">
     <div id="google_translate_element"></div>
     <div class="introduce-page-container">
-      <div class="nav-bar">
+      <div id="nav-bar" class="nav-bar">
         <img src="IMAGE/logo.webp" alt="" class="logo" />
-        <div class="menu">
-          <a href="index.html">Trang chủ</a>
-          <a href="introduce_page.html">Các làng nghề truyền thống</a>
-        </div>
-        <button id="choose-langue">Change langue</button>
+        <ul class="menu">
+          <li><a href="index.html">Trang chủ</a></li>
+          <li class="dropdown">
+            <a class="dropbtn">Làng nghề</a>
+            <div class="dropdown-content"></div>
+          </li>
+        </ul>
       </div>
 
       <div class="m-nav-bar">
@@ -38,56 +40,53 @@
         </div>
         <div id="m-menu">
           <div id="m-menu-close">&#10006;</div>
-          <div class="m-menu-items">
-            <a href="index.html">Trang chủ</a>
-            <a href="introduce_page.html">Các làng nghề truyền thống</a>
-          </div>
+          <ul class="m-menu-items">
+            <li><a href="index.html">Trang chủ</a></li>
+            <li class="dropdown">
+              <a class="dropbtn"
+                >Làng nghề
+                <p>⮝</p></a
+              >
+              <div class="dropdown-content"></div>
+            </li>
+          </ul>
         </div>
       </div>
 
       <div class="content">
-        <select name="choose-data" id="choose-data">
-          <option value="none">Chọn làng nghề bạn muốn tìm hiểu</option>
-          <option value="Đúc chuông đồng Long Điền">
-            Làng đúc chuông đồng Long Điền
-          </option>
-          <option value="Bánh tráng An Ngãi">Làng Bánh tráng An Ngãi</option>
-          <option value="Làng chài Phước Hải">Làng chài Phước Hải</option>
-          <option value="Làng mỹ nghệ">Làng mỹ nghệ</option>
-          <option value="Làng bún Long Kiên">Làng bún Long Kiên</option>
-        </select>
-
         <div class="content-main">
+          <div class="content-data">
+            <h1 id="title"></h1>
+            <div id="feature-image">
+              <img src="" alt="" id="poster" />
+              <div id="image-container">
+                <video
+                  autoplay
+                  muted
+                  loop
+                  style="width: 100%; filter: blur(1px); display: none"
+                  id="myVideo"
+                >
+                  <source
+                    src="IMAGE/trai nghiem 4102024/20241004_095155(1).mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </div>
+            </div>
+            <div class="overlay" id="overlay">
+              <img src="" alt="" id="overlay_video" />
+            </div>
+            <div id="display-data"></div>
+          </div>
           <div class="content-menu">
             <p>Mục lục</p>
             <div class="content-menu-links"></div>
           </div>
-          <div style="display: none" id="feature-image">
-            <img src="" alt="" id="poster" />
-            <div id="image-container">
-              <video
-                autoplay
-                muted
-                loop
-                style="width: 100%; filter: blur(1px); display: none"
-                id="myVideo"
-              >
-                <source
-                  src="IMAGE/trai nghiem 4102024/20241004_095155(1).mp4"
-                  type="video/mp4"
-                />
-              </video>
-              <div class="overlay" id="overlay">
-                <img src="" alt="" id="overlay_video" />
-              </div>
-            </div>
-          </div>
-          <div id="display-data"></div>
         </div>
 
-        <div style="display: none" id="comment_area">
-          <h2>Để lại đánh giá về trải nghiệm của bạn</h2>
-          <br />
+        <div id="comment-area">
+          <p class="title">Để lại đánh giá về trải nghiệm của bạn</p>
           <div
             style="
               background-color: rgba(83, 80, 80, 0.192);
@@ -96,7 +95,6 @@
             "
             id="comment"
           ></div>
-          <br />
           <div style="display: flex">
             <textarea
               name=""
