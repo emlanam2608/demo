@@ -9,7 +9,6 @@
       type="text/javascript"
       src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
     ></script>
-    <script type="text/javascript"></script>
     <script
       type="module"
       src="JAVASCRIPT/introduce_discuss_judge.js"
@@ -59,23 +58,9 @@
             <h1 id="title"></h1>
             <div id="feature-image">
               <img src="" alt="" id="poster" />
-              <div id="image-container">
-                <video
-                  autoplay
-                  muted
-                  loop
-                  style="width: 100%; filter: blur(1px); display: none"
-                  id="myVideo"
-                >
-                  <source
-                    src="IMAGE/trai nghiem 4102024/20241004_095155(1).mp4"
-                    type="video/mp4"
-                  />
-                </video>
-              </div>
             </div>
             <div class="overlay" id="overlay">
-              <img src="" alt="" id="overlay_video" />
+              <img src="" alt="" id="overlayImage" />
             </div>
             <div id="display-data"></div>
           </div>
@@ -88,6 +73,7 @@
         <div id="comment-area">
           <p class="title">Để lại đánh giá về trải nghiệm của bạn</p>
           <div id="comments"></div>
+          <button id="load-more-comments">Tải thêm bình luận</button>
           <div class="new-comment">
             <textarea
               name=""

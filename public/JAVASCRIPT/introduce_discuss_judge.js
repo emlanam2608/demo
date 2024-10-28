@@ -1,27 +1,15 @@
-import { app } from "./firebase_config.js";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-  listAll,
-  uploadString,
-  getMetadata,
-  list,
-} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
-import { convertUTCTimeVietnamTime, vietnameseToSlug } from "./utils.js";
+import { vietnameseToSlug, convertTimeToDuration } from "./utils.js";
+import SupabaseClient from "./supabase.js";
+
+const supabaseClient = new SupabaseClient();
+
 let displayData = document.getElementById("display-data");
 let posterSection = document.getElementById("poster");
 let contentMenuLinks = document.querySelector(".content-menu-links");
-let commentArea = document.getElementById("comment-area");
-let submitComment = document.getElementById("submit-comment");
+
 let commentsSection = document.getElementById("comments");
 
-//firebase setup
-const storage = getStorage(app);
-const storage_ref = ref(storage);
-let folder_ref;
+const q = new URLSearchParams(window.location.search).get("q");
 
 function generateInfoHeader(key, value) {
   const h2Element = document.createElement("h2");
@@ -86,7 +74,7 @@ function generateComment(comment, timeCreated) {
   div.appendChild(commentText);
 
   const commentTime = document.createElement("p");
-  commentTime.textContent = convertUTCTimeVietnamTime(timeCreated);
+  commentTime.textContent = convertTimeToDuration(timeCreated);
   div.appendChild(commentTime);
 
   return div;
@@ -98,14 +86,10 @@ async function initialize() {
     const response = await fetch("JSON/infor_save.json");
     const data = await response.json();
 
-    const q = new URLSearchParams(window.location.search).get("q");
-
     let temporaryContainer = document.createElement("div");
     contentMenuLinks.innerHTML = "";
     for (const [key, value] of Object.entries(data)) {
       if (q === vietnameseToSlug(key)) {
-        folder_ref = ref(storage_ref, `${key}`);
-
         const title = document.getElementById("title");
         title.textContent = key;
 
@@ -146,60 +130,87 @@ async function initialize() {
   }
 }
 
-// Call the initialize function
-await initialize();
-
+const submitComment = document.getElementById("submit-comment");
 submitComment.addEventListener("click", async function () {
-  console.log("submit comment");
-  const res = await listAll(folder_ref);
   let inputComment = document.getElementById("input-comment");
-  let file_ref = ref(folder_ref, `comment(${res.items.length})`);
   if (inputComment.value != "") {
-    await uploadString(file_ref, inputComment.value).then((snapshot) => {
-      const comment = generateComment(
-        inputComment.value,
-        snapshot.metadata.timeCreated
-      );
-      commentsSection.appendChild(comment);
-    });
+    try {
+      const res = await supabaseClient.postComment({
+        comment: inputComment.value,
+        blog_name: q,
+      });
+
+      if (res.status === 201) {
+        const date = new Date().toISOString();
+        commentsList.unshift({
+          comment: inputComment.value,
+          created_at: date,
+          blog_name: q,
+        });
+        const newComment = generateComment(inputComment.value, date);
+        commentsSection.prepend(newComment);
+
+        inputComment.value = "";
+
+        const noComment = document.getElementById("no-comment");
+        if (noComment) {
+          noComment.remove();
+        }
+      }
+    } catch (error) {
+      console.error("Error posting comment:", error);
+    }
   }
 });
 
-async function reload_comment_section() {
+const commentsList = [];
+async function loadComments() {
   try {
-    const res = await list(folder_ref, { maxResults: 100 });
-
+    console.log(commentsList.length);
     let temporaryContainer = document.createElement("div");
-    for (const data_package of res.items) {
-      try {
-        const url = await getDownloadURL(data_package);
-        const data = await fetch(url);
-        console.log(data.url.split("%2F").pop().split("?")[0]);
-        const response = await data.blob();
-        const content = await response.text();
+    const res = await supabaseClient.getComments({
+      limit: 10,
+      offset: commentsList.length,
+      blog_name: q,
+    });
+    const comments = await res.json();
 
-        const metadata = await getMetadata(data_package);
+    commentsList.push(...comments);
 
-        const comment = generateComment(content, metadata.timeCreated);
-        temporaryContainer.appendChild(comment);
-      } catch (error) {
-        console.error("Error loading comment:", error);
-      }
-    }
+    commentsList.forEach((comment) => {
+      const commentElement = generateComment(
+        comment.comment,
+        comment.created_at
+      );
+      temporaryContainer.appendChild(commentElement);
+    });
 
     commentsSection.innerHTML = temporaryContainer.innerHTML;
+
+    if (comments.length === 0) {
+      const noComment = document.createElement("p");
+      noComment.setAttribute("id", "no-comment");
+      noComment.textContent = "Không có bình luận nào";
+      commentsSection.appendChild(noComment);
+      loadMoreCommentsBtn.style.display = "none";
+    } else if (comments.length < 10) {
+      loadMoreCommentsBtn.style.display = "none";
+    }
   } catch (error) {
     console.error("Error listing items:", error);
   }
 }
-reload_comment_section();
 
-let myVideo = document.getElementById("myVideo");
-let overlay_video = document.getElementById("overlay_video");
-const overlay = document.getElementById("overlay");
-myVideo.addEventListener("click", function () {
-  overlay.classList.add("active");
+const loadMoreCommentsBtn = document.getElementById("load-more-comments");
+loadMoreCommentsBtn.addEventListener("click", async function () {
+  this.setAttribute("disabled", true);
+  this.classList.add("loading");
+  await loadComments();
+  this.removeAttribute("disabled");
+  this.classList.remove("loading");
 });
+
+const overlay = document.getElementById("overlay");
 overlay.addEventListener("click", () => {
   overlay.classList.remove("active");
 });
@@ -209,8 +220,9 @@ async function showImage() {
     let list_img_can_be_shown = document.querySelectorAll(".content-image");
     list_img_can_be_shown.forEach((img) => {
       img.addEventListener("click", function () {
+        let overlayImage = document.getElementById("overlayImage");
         overlay.classList.add("active");
-        overlay_video.src = img.src;
+        overlayImage.src = img.src;
       });
     });
   }, 10); // Delay 10ms to wait for the image to be loaded
@@ -229,9 +241,7 @@ contentMenuLinks.addEventListener("click", function (e) {
   target.classList.add("active");
 
   const id = target.getAttribute("href").substring(1);
-  console.log(id);
   const element = document.getElementById(id);
-  console.log(element);
   const offsetTop = 100;
   window.scrollTo({
     behavior: "smooth",
@@ -258,3 +268,7 @@ window.addEventListener("scroll", function () {
     }
   });
 });
+
+// Call the initialize function
+await initialize();
+loadComments();
